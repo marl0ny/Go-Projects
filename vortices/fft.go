@@ -69,7 +69,7 @@ func InPlaceRadix2FFT(array[] complex128, is_inverse bool) {
 
 func InPlaceFFTAlongRows(array[] complex128, w, h int,
 				         is_inverse bool) {
-	thread_count := GetGlobalNumberOfThreads()
+	n_routines := GetGlobalNumberOfRoutines()
 	FFTConcurrent := func(array[] complex128, is_inverse bool,
 		n_rows, w int, c chan int) {
 		for i := 0; i < n_rows; i++ {
@@ -77,13 +77,13 @@ func InPlaceFFTAlongRows(array[] complex128, w, h int,
 		}
 		c <- 0
 	}
-	c := make(chan int, thread_count)
-	for i := 0; i < thread_count; i++ {
-		n_rows := h/thread_count
+	c := make(chan int, n_routines)
+	for i := 0; i < n_routines; i++ {
+		n_rows := h/n_routines
 		go FFTConcurrent(array[i*n_rows*w: (i+1)*n_rows*w],
 					     is_inverse, n_rows, w, c)
 	}
-	for i := 0; i < thread_count; i++ {
+	for i := 0; i < n_routines; i++ {
 		<-c
 	}
 }

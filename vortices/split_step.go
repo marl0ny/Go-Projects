@@ -30,14 +30,14 @@ func SpatialStepConcurrent(psi, potential [] complex128,
 }
 
 func SpatialStep(psi, potential [] complex128, dt complex128) {
-	thread_count := GetGlobalNumberOfThreads()
-	c := make(chan int, thread_count)
-	for i := 0; i < thread_count; i++ {
-		ind1, ind2 := (i*len(psi))/thread_count, ((i+1)*len(psi))/thread_count
+	n_routines := GetGlobalNumberOfRoutines()
+	c := make(chan int, n_routines)
+	for i := 0; i < n_routines; i++ {
+		ind1, ind2 := (i*len(psi))/n_routines, ((i+1)*len(psi))/n_routines
 		go SpatialStepConcurrent(psi[ind1: ind2], potential[ind1: ind2], dt,
 			c)
 	}
-	for i := 0; i < thread_count; i++ {
+	for i := 0; i < n_routines; i++ {
 		<- c
 	}
 }
@@ -61,16 +61,16 @@ func MomentumStep(psi []complex128, px, py []float64,
 	InPlaceTranspose(psi[:], w, h)
 	InPlaceFFTAlongRows(psi[:], h, w, false)
 	InPlaceTranspose(psi[:], h, w)
-	thread_count := GetGlobalNumberOfThreads()
-	c := make(chan int, thread_count)
-	for i := 0; i < thread_count; i++ {
-		row_width, row_count := w, h/thread_count
+	n_routines := GetGlobalNumberOfRoutines()
+	c := make(chan int, n_routines)
+	for i := 0; i < n_routines; i++ {
+		row_width, row_count := w, h/n_routines
 		ind1, ind2 := i*row_count*row_width, (i + 1)*row_count*row_width
 		go PropagateMomentumConcurrent(
 			psi[ind1:ind2], px[ind1:ind2], py[ind1:ind2],
 			row_width, row_count, dt, c)
 	}
-	for i := 0; i < thread_count; i++ {
+	for i := 0; i < n_routines; i++ {
 		<- c
 	}
 	InPlaceFFTAlongRows(psi[:], w, h, true)

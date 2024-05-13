@@ -40,13 +40,13 @@ func ScaleConcurrent(psi []complex128, scale_val float64, c chan int) {
 }
 
 func Scale(psi []complex128, scale_val float64) {
-	n_threads := GetGlobalNumberOfThreads()
-	c := make(chan int, n_threads)
-	for i := 0; i < n_threads; i++ {
-		ind1, ind2 := (i*len(psi))/n_threads, ((i+1)*len(psi))/n_threads
+	n_routines := GetGlobalNumberOfRoutines()
+	c := make(chan int, n_routines)
+	for i := 0; i < n_routines; i++ {
+		ind1, ind2 := (i*len(psi))/n_routines, ((i+1)*len(psi))/n_routines
 		ScaleConcurrent(psi[ind1: ind2], scale_val, c)
 	}
-	for i := 0; i < n_threads; i++ {
+	for i := 0; i < n_routines; i++ {
 		<- c
 	}
 }
@@ -61,14 +61,14 @@ func NormSquaredConcurrent(psi []complex128, c chan float64) {
 }
 
 func NormSquared(psi []complex128) float64 {
-	n_threads := GetGlobalNumberOfThreads()
+	n_routines := GetGlobalNumberOfRoutines()
 	var sum float64 = 0.0
-	c := make(chan float64, n_threads)
-	for i := 0; i < n_threads; i++ {
-		ind1, ind2 := (len(psi)*i)/n_threads, (len(psi)*(i+1))/n_threads
+	c := make(chan float64, n_routines)
+	for i := 0; i < n_routines; i++ {
+		ind1, ind2 := (len(psi)*i)/n_routines, (len(psi)*(i+1))/n_routines
 		go NormSquaredConcurrent(psi[ind1: ind2], c)
 	}
-	for i := 0; i < n_threads; i++ {
+	for i := 0; i < n_routines; i++ {
 		sum += <- c
 	}
 	return sum

@@ -2,6 +2,8 @@
 
 Simulation of the 2D nonlinear Schrödinger equation using the [split operator method](https://www.algorithm-archive.org/contents/split-operator_method/split-operator_method.html). Run this program with `go run .`. The output will be saved as a series of TGA files, which you can then merge to a video using an external program.
 
+This project is done similar to a previous [Odin](https://github.com/marl0ny/Odin-Projects/tree/main/qm2d) and [Rust](https://github.com/marl0ny/Rust-Sims/tree/main/qm2d_split_op) implementation.  
+
 ## References:
 
 ### Split-Operator Method:

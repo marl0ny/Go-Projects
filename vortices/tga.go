@@ -55,29 +55,3 @@ func WriteTGA(filename string,
 		log.Fatal(err)
 	}
 }
-
-/*
-// Don't actually need to use this for
-// creating a TGA file
-type TGAColorMapSpec struct {
-	offset uint16
-	entry_count uint16
-	bits_per_entry byte
-}
-
-type TGAImageSpec struct {
-	x_origin uint16
-	y_origin uint16
-	width uint16
-	height uint16
-	bits_per_pixel byte
-	image_descriptor byte
-}
-
-type TGAHeader struct {
-	id_length byte // Can just set this to 0
-	color_map_type byte // Can also set this to 0
-	image_type byte // 1 for uncompressed color map images
-	color_map TGAColorMapSpec
-	image_spec TGAImageSpec
-}*/
